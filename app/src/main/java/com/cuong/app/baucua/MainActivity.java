@@ -3,7 +3,6 @@ package com.cuong.app.baucua;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,12 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    public long coin = 10000000;
-    public long dollar = 100;
-    public long reverse = 0;
-    public long selection = 1000;
-    public long earn = 0;
-    public boolean isRotate = true;
+    private long coin = 10000000;
+    private long dollar = 100;
+    private long reverse = 0;
+    private long selection = 1000;
+    private boolean isRotate = true;
 
     public Map<String, Long> selectionArr = new HashMap<>();
 
@@ -36,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tvCoin, tvDollar, tvNai, tvBau, tvGa, tvCa, tvCua, tvTom, tvSelection, tvEarn;
     private ImageView imgvItem1, imgvItem2, imgvItem3;
     private LinearLayout llMoneySelection;
+
+    //other
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imgvItem3 = findViewById(R.id.imgvItem3);
 
         llMoneySelection = findViewById(R.id.llMoneySelection);
+
+        toast = new Toast(this);
+        toast.setDuration(Toast.LENGTH_SHORT);
     }
 
     void setAction() {
@@ -100,204 +104,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void setData() {
-        tvCoin.setText(coin + " Coins");
+        tvCoin.setText(coin + " coins");
         tvDollar.setText(dollar + " Dollars");
-        tvSelection.setText("Chọn mệnh giá: " + selection + " coins");
+        tvSelection.setText(selection + " coins");
 
-        selectionArr.put("bau", 0L);
-        selectionArr.put("nai", 0L);
-        selectionArr.put("ga", 0L);
-        selectionArr.put("tom", 0L);
-        selectionArr.put("cua", 0L);
-        selectionArr.put("ca", 0L);
-    }
-
-    public void updateData() {
-        tvSelection.setText("Chọn mệnh giá: " + selection + " coins");
+        resetSelectionArr();
     }
 
     @SuppressLint("SetTextI18n")
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ibtnNai:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvNai.setText((Long.parseLong(tvNai.getText().toString()) + selection) + "");
-                        coin -= selection;
-                        reverse += selection;
-                        tvCoin.setText(coin + " Coins");
-                    } else {
-                        Toast.makeText(this, "Bạn không đủ tiền!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Vui lòng nhấn chơi tiếp!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.ibtnBau:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvBau.setText((Long.parseLong(tvBau.getText().toString()) + selection) + "");
-                        coin -= selection;
-                        reverse += selection;
-                        tvCoin.setText(coin + " Coins");
-                    } else {
-                        Toast.makeText(this, "Bạn không đủ tiền!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Vui lòng nhấn chơi tiếp!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.ibtnGa:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvGa.setText((Long.parseLong(tvGa.getText().toString()) + selection) + "");
-                        coin -= selection;
-                        reverse += selection;
-                        tvCoin.setText(coin + " Coins");
-                    } else {
-                        Toast.makeText(this, "Bạn không đủ tiền!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Vui lòng nhấn chơi tiếp!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.ibtnCa:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvCa.setText((Long.parseLong(tvCa.getText().toString()) + selection) + "");
-                        coin -= selection;
-                        reverse += selection;
-                        tvCoin.setText(coin + " Coins");
-                    } else {
-                        Toast.makeText(this, "Bạn không đủ tiền!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Vui lòng nhấn chơi tiếp!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.ibtnCua:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvCua.setText((Long.parseLong(tvCua.getText().toString()) + selection) + "");
-                        coin -= selection;
-                        reverse += selection;
-                        tvCoin.setText(coin + " Coins");
-                    } else {
-                        Toast.makeText(this, "Bạn không đủ tiền!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Vui lòng nhấn chơi tiếp!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.ibtnTom:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvTom.setText((Long.parseLong(tvTom.getText().toString()) + selection) + "");
-                        coin -= selection;
-                        reverse += selection;
-                        tvCoin.setText(coin + " Coins");
-                    } else {
-                        Toast.makeText(this, "Bạn không đủ tiền!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Vui lòng nhấn chơi tiếp!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.ibtnMoneySelection:
-                new MoneySelectionDialog(this).show();
-                break;
-            case R.id.btnBack:
-                coin += reverse;
-                reverse = 0;
-                tvCoin.setText(coin + " Coins");
-
-                tvNai.setText("0");
-                tvBau.setText("0");
-                tvGa.setText("0");
-                tvCa.setText("0");
-                tvCua.setText("0");
-                tvTom.setText("0");
-
-                isRotate = true;
-                btnRotate.setText("Lắc");
-                break;
-            case R.id.btnRotate:
-                if (isRotate) {
-                    if (Long.parseLong(tvNai.getText().toString()) > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            selectionArr.replace("nai", Long.parseLong(tvNai.getText().toString()));
-                        }
-                    }
-                    if (Long.parseLong(tvBau.getText().toString()) > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            selectionArr.replace("bau", Long.parseLong(tvBau.getText().toString()));
-                        }
-                    }
-                    if (Long.parseLong(tvGa.getText().toString()) > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            selectionArr.replace("ga", Long.parseLong(tvGa.getText().toString()));
-                        }
-                    }
-                    if (Long.parseLong(tvCa.getText().toString()) > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            selectionArr.replace("ca", Long.parseLong(tvCa.getText().toString()));
-                        }
-                    }
-                    if (Long.parseLong(tvCua.getText().toString()) > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            selectionArr.replace("cua", Long.parseLong(tvCua.getText().toString()));
-                        }
-                    }
-                    if (Long.parseLong(tvTom.getText().toString()) > 0) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            selectionArr.replace("tom", Long.parseLong(tvTom.getText().toString()));
-                        }
-                    }
-                    new RotateDialog(this).show();
-                    isRotate = false;
-                    btnRotate.setText("Chơi tiếp");
-                    btnRotate.setBackgroundResource(R.drawable.btn_circle_2);
-
-//                    ibtnBau.setEnabled(false);
-//                    ibtnNai.setEnabled(false);
-//                    ibtnGa.setEnabled(false);
-//                    ibtnCua.setEnabled(false);
-//                    ibtnTom.setEnabled(false);
-//                    ibtnCa.setEnabled(false);
-                } else {
-                    refresh();
-                    earn = 0L;
-                    tvEarn.setText("Lợi nhuận: 0 Coins");
-                    isRotate = true;
-                    btnRotate.setText("Lắc");
-                    btnRotate.setBackgroundResource(R.drawable.btn_circle);
-
-//                    ibtnBau.setEnabled(true);
-//                    ibtnNai.setEnabled(true);
-//                    ibtnGa.setEnabled(true);
-//                    ibtnCua.setEnabled(true);
-//                    ibtnTom.setEnabled(true);
-//                    ibtnCa.setEnabled(true);
-                }
-
-
-                break;
-            case R.id.btnContinue:
-                break;
-            case R.id.llMoneySelection:
-                new MoneySelectionDialog(this).show();
-                break;
-        }
+    public void updateSelection(long value) {
+        selection = value;
+        tvSelection.setText(selection + " coins");
     }
 
-    public void loadScore() {
-        reverse = 0;
-        tvCoin.setText(coin + " Coins");
-        tvEarn.setText("Lợi nhuận: " + earn + " Coins");
+    public void updateRotate(long earn) {
+        this.coin += earn;
+        tvCoin.setText(coin + " coins");
+        tvEarn.setText((earn - reverse) + " coins");
+        this.reverse = 0;
+
+        resetSelectionArr();
     }
 
-    public void refresh() {
+    public void resetSelectionArrView() {
         tvNai.setText("0");
         tvBau.setText("0");
         tvGa.setText("0");
@@ -306,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvTom.setText("0");
     }
 
-    public void resetSelection() {
+    public void resetSelectionArr() {
         selectionArr.put("bau", 0L);
         selectionArr.put("nai", 0L);
         selectionArr.put("ga", 0L);
@@ -315,76 +144,225 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         selectionArr.put("ca", 0L);
     }
 
-    public void setImageResult(int position, String result) {
-        if (position == 1) {
-            switch (result) {
-                case "bau":
-                    imgvItem1.setImageResource(R.drawable.ic_gourd);
-                    break;
-                case "nai":
-                    imgvItem1.setImageResource(R.drawable.ic_deer);
-                    break;
-                case "ga":
-                    imgvItem1.setImageResource(R.drawable.ic_chicken);
-                    break;
-                case "ca":
-                    imgvItem1.setImageResource(R.drawable.ic_fish);
-                    break;
-                case "cua":
-                    imgvItem1.setImageResource(R.drawable.ic_crab);
-                    break;
-                case "tom":
-                    imgvItem1.setImageResource(R.drawable.ic_shrimp);
-                    break;
-                default:
-                    break;
-            }
-        } else if (position == 2) {
-            switch (result) {
-                case "bau":
-                    imgvItem2.setImageResource(R.drawable.ic_gourd);
-                    break;
-                case "nai":
-                    imgvItem2.setImageResource(R.drawable.ic_deer);
-                    break;
-                case "ga":
-                    imgvItem2.setImageResource(R.drawable.ic_chicken);
-                    break;
-                case "ca":
-                    imgvItem2.setImageResource(R.drawable.ic_fish);
-                    break;
-                case "cua":
-                    imgvItem2.setImageResource(R.drawable.ic_crab);
-                    break;
-                case "tom":
-                    imgvItem2.setImageResource(R.drawable.ic_shrimp);
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            switch (result) {
-                case "bau":
-                    imgvItem3.setImageResource(R.drawable.ic_gourd);
-                    break;
-                case "nai":
-                    imgvItem3.setImageResource(R.drawable.ic_deer);
-                    break;
-                case "ga":
-                    imgvItem3.setImageResource(R.drawable.ic_chicken);
-                    break;
-                case "ca":
-                    imgvItem3.setImageResource(R.drawable.ic_fish);
-                    break;
-                case "cua":
-                    imgvItem3.setImageResource(R.drawable.ic_crab);
-                    break;
-                case "tom":
-                    imgvItem3.setImageResource(R.drawable.ic_shrimp);
-                    break;
-                default:
-                    break;
-            }
+    @SuppressLint({"SetTextI18n", "NonConstantResourceId"})
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ibtnNai:
+                if (isRotate) {
+                    if (coin >= selection) {
+                        tvNai.setText((Long.parseLong(tvNai.getText().toString()) + selection) + "");
+                        updateCoin();
+                    } else {
+                        toast("Bạn không đủ tiền!");
+                    }
+                } else {
+                    toast("Vui lòng nhấn chơi tiếp!");
+                }
+                break;
+            case R.id.ibtnBau:
+                if (isRotate) {
+                    if (coin >= selection) {
+                        tvBau.setText((Long.parseLong(tvBau.getText().toString()) + selection) + "");
+                        updateCoin();
+                    } else {
+                        toast("Bạn không đủ tiền!");
+                    }
+                } else {
+                    toast("Vui lòng nhấn chơi tiếp!");
+                }
+                break;
+            case R.id.ibtnGa:
+                if (isRotate) {
+                    if (coin >= selection) {
+                        tvGa.setText((Long.parseLong(tvGa.getText().toString()) + selection) + "");
+                        updateCoin();
+                    } else {
+                        toast("Bạn không đủ tiền!");
+                    }
+                } else {
+                    toast("Vui lòng nhấn chơi tiếp!");
+                }
+                break;
+            case R.id.ibtnCa:
+                if (isRotate) {
+                    if (coin >= selection) {
+                        tvCa.setText((Long.parseLong(tvCa.getText().toString()) + selection) + "");
+                        updateCoin();
+                    } else {
+                        toast("Bạn không đủ tiền!");
+                    }
+                } else {
+                    toast("Vui lòng nhấn chơi tiếp!");
+                }
+                break;
+            case R.id.ibtnCua:
+                if (isRotate) {
+                    if (coin >= selection) {
+                        tvCua.setText((Long.parseLong(tvCua.getText().toString()) + selection) + "");
+                        updateCoin();
+                    } else {
+                        toast("Bạn không đủ tiền!");
+                    }
+                } else {
+                    toast("Vui lòng nhấn chơi tiếp!");
+                }
+                break;
+            case R.id.ibtnTom:
+                if (isRotate) {
+                    if (coin >= selection) {
+                        tvTom.setText((Long.parseLong(tvTom.getText().toString()) + selection) + "");
+                        updateCoin();
+                    } else {
+                        toast("Bạn không đủ tiền!");
+                    }
+                } else {
+                    toast("Vui lòng nhấn chơi tiếp!");
+                }
+                break;
+            case R.id.ibtnMoneySelection:
+            case R.id.llMoneySelection:
+                new MoneySelectionDialog(this).show();
+                break;
+            case R.id.btnBack:
+                coin += reverse;
+                reverse = 0;
+                tvCoin.setText(coin + " coins");
+
+                resetSelectionArrView();
+
+                isRotate = true;
+                btnRotate.setText("Lắc");
+                btnRotate.setBackgroundResource(R.drawable.btn_circle);
+
+                imgvItem1.setVisibility(View.INVISIBLE);
+                imgvItem2.setVisibility(View.INVISIBLE);
+                imgvItem3.setVisibility(View.INVISIBLE);
+                break;
+            case R.id.btnRotate:
+                if (isRotate) {
+                    imgvItem1.setVisibility(View.VISIBLE);
+                    imgvItem2.setVisibility(View.VISIBLE);
+                    imgvItem3.setVisibility(View.VISIBLE);
+
+                    if (Long.parseLong(tvNai.getText().toString()) > 0) {
+                        selectionArr.put("nai", Long.parseLong(tvNai.getText().toString()));
+                    }
+                    if (Long.parseLong(tvBau.getText().toString()) > 0) {
+                        selectionArr.put("bau", Long.parseLong(tvBau.getText().toString()));
+                    }
+                    if (Long.parseLong(tvGa.getText().toString()) > 0) {
+                        selectionArr.put("ga", Long.parseLong(tvGa.getText().toString()));
+                    }
+                    if (Long.parseLong(tvCa.getText().toString()) > 0) {
+                        selectionArr.put("ca", Long.parseLong(tvCa.getText().toString()));
+                    }
+                    if (Long.parseLong(tvCua.getText().toString()) > 0) {
+                        selectionArr.put("cua", Long.parseLong(tvCua.getText().toString()));
+                    }
+                    if (Long.parseLong(tvTom.getText().toString()) > 0) {
+                        selectionArr.put("tom", Long.parseLong(tvTom.getText().toString()));
+                    }
+
+                    isRotate = false;
+                    btnRotate.setText("Chơi tiếp");
+                    btnRotate.setBackgroundResource(R.drawable.btn_circle_2);
+                    new RotateDialog(this).show();
+                } else {
+                    imgvItem1.setVisibility(View.INVISIBLE);
+                    imgvItem2.setVisibility(View.INVISIBLE);
+                    imgvItem3.setVisibility(View.INVISIBLE);
+
+                    resetSelectionArrView();
+                    tvEarn.setText("0 coins");
+                    isRotate = true;
+                    btnRotate.setText("Lắc");
+                    btnRotate.setBackgroundResource(R.drawable.btn_circle);
+                }
+                break;
+            case R.id.btnContinue:
+                break;
         }
+    }
+
+    public void setImageResult(String item1, String item2, String item3) {
+
+        switch (item1) {
+            case "bau":
+                imgvItem1.setImageResource(R.drawable.ic_gourd);
+                break;
+            case "nai":
+                imgvItem1.setImageResource(R.drawable.ic_deer);
+                break;
+            case "ga":
+                imgvItem1.setImageResource(R.drawable.ic_chicken);
+                break;
+            case "ca":
+                imgvItem1.setImageResource(R.drawable.ic_fish);
+                break;
+            case "cua":
+                imgvItem1.setImageResource(R.drawable.ic_crab);
+                break;
+            case "tom":
+                imgvItem1.setImageResource(R.drawable.ic_shrimp);
+                break;
+            default:
+                break;
+        }
+        switch (item2) {
+            case "bau":
+                imgvItem2.setImageResource(R.drawable.ic_gourd);
+                break;
+            case "nai":
+                imgvItem2.setImageResource(R.drawable.ic_deer);
+                break;
+            case "ga":
+                imgvItem2.setImageResource(R.drawable.ic_chicken);
+                break;
+            case "ca":
+                imgvItem2.setImageResource(R.drawable.ic_fish);
+                break;
+            case "cua":
+                imgvItem2.setImageResource(R.drawable.ic_crab);
+                break;
+            case "tom":
+                imgvItem2.setImageResource(R.drawable.ic_shrimp);
+                break;
+            default:
+                break;
+        }
+        switch (item3) {
+            case "bau":
+                imgvItem3.setImageResource(R.drawable.ic_gourd);
+                break;
+            case "nai":
+                imgvItem3.setImageResource(R.drawable.ic_deer);
+                break;
+            case "ga":
+                imgvItem3.setImageResource(R.drawable.ic_chicken);
+                break;
+            case "ca":
+                imgvItem3.setImageResource(R.drawable.ic_fish);
+                break;
+            case "cua":
+                imgvItem3.setImageResource(R.drawable.ic_crab);
+                break;
+            case "tom":
+                imgvItem3.setImageResource(R.drawable.ic_shrimp);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void updateCoin() {
+        coin -= selection;
+        reverse += selection;
+        tvCoin.setText(coin + " coins");
+    }
+
+    private void toast(String text) {
+        toast.setText(text);
+        toast.show();
     }
 }

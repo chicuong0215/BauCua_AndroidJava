@@ -1,10 +1,8 @@
 package com.cuong.app.baucua.ui.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -13,51 +11,38 @@ import com.cuong.app.baucua.R;
 import com.cuong.app.baucua.data.db.model.BauCua;
 
 public class RotateDialog extends Dialog {
-    private MainActivity mainActivity;
-    private BauCua bauCua;
+    private long earn;
 
-    public RotateDialog(@NonNull Context context) {
-        super(context);
-
-        this.mainActivity = (MainActivity) context;
+    public RotateDialog(@NonNull MainActivity mainActivity) {
+        super(mainActivity);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         this.setContentView(R.layout.dialog_rotate);
 
-        bauCua = new BauCua();
-
+        BauCua bauCua = new BauCua();
         String item1 = bauCua.random();
         String item2 = bauCua.random();
         String item3 = bauCua.random();
 
+        mainActivity.setImageResult(item1, item2, item3);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mainActivity.selectionArr.forEach((k, v) -> {
+                long selection = 2 * mainActivity.selectionArr.get(k);
                 if (k.equals(item1)) {
-                    mainActivity.coin += 2L * mainActivity.selectionArr.get(k);
-                    mainActivity.earn += 2L * mainActivity.selectionArr.get(k);
-                    mainActivity.setImageResult(1, item1);
+                    earn += selection;
                 }
                 if (k.equals(item2)) {
-                    mainActivity.coin += 2L * mainActivity.selectionArr.get(k);
-                    mainActivity.setImageResult(2, item2);
-                    mainActivity.earn += 2L * mainActivity.selectionArr.get(k);
+                    earn += selection;
                 }
                 if (k.equals(item3)) {
-                    mainActivity.coin += 2L * mainActivity.selectionArr.get(k);
-                    mainActivity.setImageResult(3, item3);
-                    mainActivity.earn += 2L * mainActivity.selectionArr.get(k);
+                    earn += selection;
                 }
             });
         }
-
-        mainActivity.earn -= mainActivity.reverse;
-
-        mainActivity.loadScore();
-        mainActivity.resetSelection();
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                mainActivity.updateRotate(earn);
                 dismiss();
             }
         }, 500);
