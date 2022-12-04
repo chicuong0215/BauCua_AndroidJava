@@ -3,9 +3,10 @@ package com.cuong.app.baucua;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -13,61 +14,62 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cuong.app.baucua.ui.dialog.MoneySelectionDialog;
+import com.cuong.app.baucua.ui.dialog.CoinSelectionDialog;
 import com.cuong.app.baucua.ui.dialog.RotateDialog;
+import com.cuong.app.baucua.utils.ScreenUtils;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private long coin = 10000000;
-    private long dollar = 100;
-    private long reverse = 0;
-    private long selection = 1000;
+    private long coin = 1000000;
+    private long reverseCoin = 0;
+    private long selectionCoin = 0;
     private boolean isRotate = true;
 
-    public Map<String, Long> selectionArr = new HashMap<>();
+    private final Map<String, Long> selectionArr = new HashMap<>();
+    private final Map<String, Integer> resourceArr = new HashMap<>();
 
     //view
-    private ImageButton ibtnBau, ibtnCua, ibtnTom, ibtnCa, ibtnGa, ibtnNai, ibtnMoneySelection;
-    private Button btnBack, btnRotate, btnContinue;
-    private TextView tvCoin, tvDollar, tvNai, tvBau, tvGa, tvCa, tvCua, tvTom, tvSelection, tvEarn;
+    private ImageButton ibtnBau, ibtnCua, ibtnTom, ibtnCa, ibtnGa, ibtnNai, ibtnCoinSelection;
+    private Button btnBack, btnRotate;
+    private TextView tvCoin, tvNai, tvBau, tvGa, tvCa, tvCua, tvTom, tvSelection, tvEarn;
     private ImageView imgvItem1, imgvItem2, imgvItem3;
-    private LinearLayout llMoneySelection;
+    private LinearLayout llCoinSelection;
 
-    //other
+    //utils
     private Toast toast;
+    private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+
+    //database
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //init screen
         super.onCreate(savedInstanceState);
+        ScreenUtils.setFullScreen(getWindow());
         setContentView(R.layout.activity_main);
 
-        config();
-        init();
-        setAction();
-        setData();
+        initView();
+        initAction();
+        initData();
     }
 
-    void config() {
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
-
-    void init() {
+    void initView() {
         ibtnBau = findViewById(R.id.ibtnBau);
         ibtnCua = findViewById(R.id.ibtnCua);
         ibtnTom = findViewById(R.id.ibtnTom);
         ibtnCa = findViewById(R.id.ibtnCa);
         ibtnGa = findViewById(R.id.ibtnGa);
         ibtnNai = findViewById(R.id.ibtnNai);
-        ibtnMoneySelection = findViewById(R.id.ibtnMoneySelection);
+        ibtnCoinSelection = findViewById(R.id.ibtnCoinSelection);
 
         btnBack = findViewById(R.id.btnBack);
         btnRotate = findViewById(R.id.btnRotate);
-        btnContinue = findViewById(R.id.btnContinue);
 
         tvCoin = findViewById(R.id.tvCoin);
-        tvDollar = findViewById(R.id.tvDollar);
         tvNai = findViewById(R.id.tvNai);
         tvBau = findViewById(R.id.tvBau);
         tvGa = findViewById(R.id.tvGa);
@@ -81,288 +83,208 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imgvItem2 = findViewById(R.id.imgvItem2);
         imgvItem3 = findViewById(R.id.imgvItem3);
 
-        llMoneySelection = findViewById(R.id.llMoneySelection);
+        llCoinSelection = findViewById(R.id.llCoinSelection);
 
         toast = new Toast(this);
         toast.setDuration(Toast.LENGTH_SHORT);
+
+        initResourceArr();
+        initSelectionArr();
     }
 
-    void setAction() {
+    void initAction() {
         ibtnBau.setOnClickListener(this);
         ibtnCua.setOnClickListener(this);
         ibtnTom.setOnClickListener(this);
         ibtnCa.setOnClickListener(this);
         ibtnGa.setOnClickListener(this);
         ibtnNai.setOnClickListener(this);
-        ibtnMoneySelection.setOnClickListener(this);
+        ibtnCoinSelection.setOnClickListener(this);
 
         btnBack.setOnClickListener(this);
         btnRotate.setOnClickListener(this);
-        btnContinue.setOnClickListener(this);
 
-        llMoneySelection.setOnClickListener(this);
+        llCoinSelection.setOnClickListener(this);
     }
 
-    void setData() {
-        tvCoin.setText(coin + " coins");
-        tvDollar.setText(dollar + " Dollars");
-        tvSelection.setText(selection + " coins");
-
-        resetSelectionArr();
+    void initData() {
+        sharedPreferences = getSharedPreferences("bau_cua", MODE_PRIVATE);
+        coin = sharedPreferences.getLong("coin", 1000000L);
+        tvCoin.setText(numberFormat.format(coin));
     }
 
-    @SuppressLint("SetTextI18n")
-    public void updateSelection(long value) {
-        selection = value;
-        tvSelection.setText(selection + " coins");
+    public void updateSelection(long coin) {
+        selectionCoin = coin;
+        tvSelection.setText(numberFormat.format(selectionCoin));
     }
 
-    public void updateRotate(long earn) {
-        this.coin += earn;
-        tvCoin.setText(coin + " coins");
-        tvEarn.setText((earn - reverse) + " coins");
-        this.reverse = 0;
-
-        resetSelectionArr();
+    public void updateRotate(long earnCoin) {
+        this.coin += earnCoin;
+        tvCoin.setText(numberFormat.format(coin));
+        tvEarn.setText(numberFormat.format(earnCoin - reverseCoin));
+        this.reverseCoin = 0;
     }
 
-    public void resetSelectionArrView() {
+    public void resetSelectionArr() {
+        initSelectionArr();
+
         tvNai.setText("0");
         tvBau.setText("0");
         tvGa.setText("0");
         tvCa.setText("0");
         tvCua.setText("0");
         tvTom.setText("0");
+
+        tvCoin.setText(numberFormat.format(coin));
+        tvEarn.setText(numberFormat.format(0));
     }
 
-    public void resetSelectionArr() {
+    public void initResourceArr() {
+        resourceArr.put("bau", R.drawable.ic_gourd);
+        resourceArr.put("nai", R.drawable.ic_deer);
+        resourceArr.put("ga", R.drawable.ic_chicken);
+        resourceArr.put("tom", R.drawable.ic_shrimp);
+        resourceArr.put("cua", R.drawable.ic_crab);
+        resourceArr.put("ca", R.drawable.ic_fish);
+    }
+
+    public void initSelectionArr() {
         selectionArr.put("bau", 0L);
         selectionArr.put("nai", 0L);
         selectionArr.put("ga", 0L);
         selectionArr.put("tom", 0L);
         selectionArr.put("cua", 0L);
         selectionArr.put("ca", 0L);
+
     }
 
-    @SuppressLint({"SetTextI18n", "NonConstantResourceId"})
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ibtnNai:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvNai.setText((Long.parseLong(tvNai.getText().toString()) + selection) + "");
-                        updateCoin();
-                    } else {
-                        toast("Bạn không đủ tiền!");
-                    }
-                } else {
-                    toast("Vui lòng nhấn chơi tiếp!");
-                }
-                break;
-            case R.id.ibtnBau:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvBau.setText((Long.parseLong(tvBau.getText().toString()) + selection) + "");
-                        updateCoin();
-                    } else {
-                        toast("Bạn không đủ tiền!");
-                    }
-                } else {
-                    toast("Vui lòng nhấn chơi tiếp!");
-                }
-                break;
-            case R.id.ibtnGa:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvGa.setText((Long.parseLong(tvGa.getText().toString()) + selection) + "");
-                        updateCoin();
-                    } else {
-                        toast("Bạn không đủ tiền!");
-                    }
-                } else {
-                    toast("Vui lòng nhấn chơi tiếp!");
-                }
-                break;
-            case R.id.ibtnCa:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvCa.setText((Long.parseLong(tvCa.getText().toString()) + selection) + "");
-                        updateCoin();
-                    } else {
-                        toast("Bạn không đủ tiền!");
-                    }
-                } else {
-                    toast("Vui lòng nhấn chơi tiếp!");
-                }
-                break;
-            case R.id.ibtnCua:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvCua.setText((Long.parseLong(tvCua.getText().toString()) + selection) + "");
-                        updateCoin();
-                    } else {
-                        toast("Bạn không đủ tiền!");
-                    }
-                } else {
-                    toast("Vui lòng nhấn chơi tiếp!");
-                }
-                break;
-            case R.id.ibtnTom:
-                if (isRotate) {
-                    if (coin >= selection) {
-                        tvTom.setText((Long.parseLong(tvTom.getText().toString()) + selection) + "");
-                        updateCoin();
-                    } else {
-                        toast("Bạn không đủ tiền!");
-                    }
-                } else {
-                    toast("Vui lòng nhấn chơi tiếp!");
-                }
-                break;
-            case R.id.ibtnMoneySelection:
-            case R.id.llMoneySelection:
-                new MoneySelectionDialog(this).show();
-                break;
-            case R.id.btnBack:
-                coin += reverse;
-                reverse = 0;
-                tvCoin.setText(coin + " coins");
+    public void updateImageResult(String item1, String item2, String item3) {
+        showImage();
 
-                resetSelectionArrView();
-
-                isRotate = true;
-                btnRotate.setText("Lắc");
-                btnRotate.setBackgroundResource(R.drawable.btn_circle);
-
-                imgvItem1.setVisibility(View.INVISIBLE);
-                imgvItem2.setVisibility(View.INVISIBLE);
-                imgvItem3.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.btnRotate:
-                if (isRotate) {
-                    imgvItem1.setVisibility(View.VISIBLE);
-                    imgvItem2.setVisibility(View.VISIBLE);
-                    imgvItem3.setVisibility(View.VISIBLE);
-
-                    if (Long.parseLong(tvNai.getText().toString()) > 0) {
-                        selectionArr.put("nai", Long.parseLong(tvNai.getText().toString()));
-                    }
-                    if (Long.parseLong(tvBau.getText().toString()) > 0) {
-                        selectionArr.put("bau", Long.parseLong(tvBau.getText().toString()));
-                    }
-                    if (Long.parseLong(tvGa.getText().toString()) > 0) {
-                        selectionArr.put("ga", Long.parseLong(tvGa.getText().toString()));
-                    }
-                    if (Long.parseLong(tvCa.getText().toString()) > 0) {
-                        selectionArr.put("ca", Long.parseLong(tvCa.getText().toString()));
-                    }
-                    if (Long.parseLong(tvCua.getText().toString()) > 0) {
-                        selectionArr.put("cua", Long.parseLong(tvCua.getText().toString()));
-                    }
-                    if (Long.parseLong(tvTom.getText().toString()) > 0) {
-                        selectionArr.put("tom", Long.parseLong(tvTom.getText().toString()));
-                    }
-
-                    isRotate = false;
-                    btnRotate.setText("Chơi tiếp");
-                    btnRotate.setBackgroundResource(R.drawable.btn_circle_2);
-                    new RotateDialog(this).show();
-                } else {
-                    imgvItem1.setVisibility(View.INVISIBLE);
-                    imgvItem2.setVisibility(View.INVISIBLE);
-                    imgvItem3.setVisibility(View.INVISIBLE);
-
-                    resetSelectionArrView();
-                    tvEarn.setText("0 coins");
-                    isRotate = true;
-                    btnRotate.setText("Lắc");
-                    btnRotate.setBackgroundResource(R.drawable.btn_circle);
-                }
-                break;
-            case R.id.btnContinue:
-                break;
-        }
+        imgvItem1.setImageResource(resourceArr.get(item1));
+        imgvItem2.setImageResource(resourceArr.get(item2));
+        imgvItem3.setImageResource(resourceArr.get(item3));
     }
 
-    public void setImageResult(String item1, String item2, String item3) {
-
-        switch (item1) {
-            case "bau":
-                imgvItem1.setImageResource(R.drawable.ic_gourd);
-                break;
-            case "nai":
-                imgvItem1.setImageResource(R.drawable.ic_deer);
-                break;
-            case "ga":
-                imgvItem1.setImageResource(R.drawable.ic_chicken);
-                break;
-            case "ca":
-                imgvItem1.setImageResource(R.drawable.ic_fish);
-                break;
-            case "cua":
-                imgvItem1.setImageResource(R.drawable.ic_crab);
-                break;
-            case "tom":
-                imgvItem1.setImageResource(R.drawable.ic_shrimp);
-                break;
-            default:
-                break;
-        }
-        switch (item2) {
-            case "bau":
-                imgvItem2.setImageResource(R.drawable.ic_gourd);
-                break;
-            case "nai":
-                imgvItem2.setImageResource(R.drawable.ic_deer);
-                break;
-            case "ga":
-                imgvItem2.setImageResource(R.drawable.ic_chicken);
-                break;
-            case "ca":
-                imgvItem2.setImageResource(R.drawable.ic_fish);
-                break;
-            case "cua":
-                imgvItem2.setImageResource(R.drawable.ic_crab);
-                break;
-            case "tom":
-                imgvItem2.setImageResource(R.drawable.ic_shrimp);
-                break;
-            default:
-                break;
-        }
-        switch (item3) {
-            case "bau":
-                imgvItem3.setImageResource(R.drawable.ic_gourd);
-                break;
-            case "nai":
-                imgvItem3.setImageResource(R.drawable.ic_deer);
-                break;
-            case "ga":
-                imgvItem3.setImageResource(R.drawable.ic_chicken);
-                break;
-            case "ca":
-                imgvItem3.setImageResource(R.drawable.ic_fish);
-                break;
-            case "cua":
-                imgvItem3.setImageResource(R.drawable.ic_crab);
-                break;
-            case "tom":
-                imgvItem3.setImageResource(R.drawable.ic_shrimp);
-                break;
-            default:
-                break;
-        }
+    public void hiddenImage() {
+        imgvItem1.setVisibility(View.INVISIBLE);
+        imgvItem2.setVisibility(View.INVISIBLE);
+        imgvItem3.setVisibility(View.INVISIBLE);
     }
 
-    private void updateCoin() {
-        coin -= selection;
-        reverse += selection;
-        tvCoin.setText(coin + " coins");
+    public void showImage() {
+        imgvItem1.setVisibility(View.VISIBLE);
+        imgvItem2.setVisibility(View.VISIBLE);
+        imgvItem3.setVisibility(View.VISIBLE);
+    }
+
+    private void updateCoinAfterSelect() {
+        coin -= selectionCoin;
+        reverseCoin += selectionCoin;
+        tvCoin.setText(numberFormat.format(coin));
     }
 
     private void toast(String text) {
         toast.setText(text);
         toast.show();
     }
+
+    public Map<String, Long> getSelectionArr() {
+        return this.selectionArr;
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View view) {
+        if (selectionCoin > 0) {
+            if (isRotate) {
+                if (coin >= selectionCoin) {
+                    switch (view.getId()) {
+                        case R.id.ibtnNai:
+                            selectionArr.put("nai", selectionArr.get("nai") + selectionCoin);
+                            tvNai.setText(numberFormat.format(selectionArr.get("nai")));
+                            updateCoinAfterSelect();
+                            break;
+                        case R.id.ibtnBau:
+                            selectionArr.put("bau", selectionArr.get("bau") + selectionCoin);
+                            tvBau.setText(numberFormat.format(selectionArr.get("bau")));
+                            updateCoinAfterSelect();
+                            break;
+                        case R.id.ibtnGa:
+                            selectionArr.put("ga", selectionArr.get("ga") + selectionCoin);
+                            tvGa.setText(numberFormat.format(selectionArr.get("ga")));
+                            updateCoinAfterSelect();
+                            break;
+                        case R.id.ibtnCa:
+                            selectionArr.put("ca", selectionArr.get("ca") + selectionCoin);
+                            tvCa.setText(numberFormat.format(selectionArr.get("ca")));
+                            updateCoinAfterSelect();
+                            break;
+                        case R.id.ibtnCua:
+                            selectionArr.put("cua", selectionArr.get("cua") + selectionCoin);
+                            tvCua.setText(numberFormat.format(selectionArr.get("cua")));
+                            updateCoinAfterSelect();
+                            break;
+                        case R.id.ibtnTom:
+                            selectionArr.put("tom", selectionArr.get("tom") + selectionCoin);
+                            tvTom.setText(numberFormat.format(selectionArr.get("tom")));
+                            updateCoinAfterSelect();
+                            break;
+                    }
+                } else {
+                    toast(getResources().getString(R.string.tip_do_not_have_enough_coin));
+                }
+
+            } else {
+                toast(getResources().getString(R.string.tip_play_continue));
+            }
+        } else {
+            toast(getResources().getString(R.string.tip_put_coin));
+        }
+
+
+        if (view.getId() == R.id.btnRotate) {
+            if (isRotate) {
+                disableRotate();
+                new RotateDialog(this).show();
+            } else {
+                resetSelectionArr();
+                enableRotate();
+            }
+
+        }
+        switch (view.getId()) {
+            case R.id.ibtnCoinSelection:
+            case R.id.llCoinSelection:
+                new CoinSelectionDialog(this).show();
+                break;
+            case R.id.btnBack:
+                coin += reverseCoin;
+                reverseCoin = 0;
+
+                resetSelectionArr();
+                enableRotate();
+                break;
+        }
+    }
+
+    private void enableRotate() {
+        isRotate = true;
+        btnRotate.setText(R.string.rotate);
+        btnRotate.setBackgroundResource(R.drawable.btn_circle);
+        hiddenImage();
+    }
+
+    private void disableRotate() {
+        isRotate = false;
+        btnRotate.setText(R.string.play_continue);
+        btnRotate.setBackgroundResource(R.drawable.btn_circle_2);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sharedPreferences.edit().putLong("coin", coin).apply();
+    }
+
 }

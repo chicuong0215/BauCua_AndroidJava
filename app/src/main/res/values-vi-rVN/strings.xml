@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bầu Cua</string>
+    <string name="rotate">Lắc</string>
+    <string name="play_continue">Chơi tiếp</string>
+    <string name="tip_play_continue">Vui lòng nhấn chơi tiếp!</string>
+    <string name="tip_put_coin">Vui lòng đặt tiền!</string>
+    <string name="tip_do_not_have_enough_coin">Bạn không đủ tiền!</string>
+    <string name="reset">Đặt lại</string>
+    <string name="put_coin">Đặt tiền</string>
+</resources>

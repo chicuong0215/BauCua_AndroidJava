@@ -10,7 +10,6 @@ public class BauCua {
     }
 
     public String random() {
-        Random random = new Random();
-        return arr[random.nextInt(6)];
+        return arr[new Random().nextInt(6)];
     }
 }

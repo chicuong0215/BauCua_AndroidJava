@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">BauCua</string>
+    <string name="rotate">Rotate</string>
+    <string name="play_continue">Play continue</string>
+    <string name="tip_play_continue">Please press play continue!</string>
+    <string name="tip_put_coin">Please put coin!</string>
+    <string name="tip_do_not_have_enough_coin">You don\'t have enough coin!</string>
+    <string name="reset">Reset</string>
+    <string name="put_coin">Put coin</string>
 </resources>

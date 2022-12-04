@@ -10,15 +10,17 @@ import androidx.annotation.NonNull;
 import com.cuong.app.baucua.MainActivity;
 import com.cuong.app.baucua.R;
 
-public class MoneySelectionDialog extends Dialog implements View.OnClickListener {
+public class CoinSelectionDialog extends Dialog implements View.OnClickListener {
     private final MainActivity mainActivity;
 
-    public MoneySelectionDialog(@NonNull MainActivity mainActivity) {
+    public CoinSelectionDialog(@NonNull MainActivity mainActivity) {
+        //init screen
         super(mainActivity);
         this.mainActivity = mainActivity;
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        this.setContentView(R.layout.dialog_money_selection);
+        this.setContentView(R.layout.dialog_coin_selection);
 
+        //init view
         Button btn1000 = findViewById(R.id.btn1000);
         Button btn2000 = findViewById(R.id.btn2000);
         Button btn5000 = findViewById(R.id.btn5000);
@@ -26,6 +28,7 @@ public class MoneySelectionDialog extends Dialog implements View.OnClickListener
         Button btn20000 = findViewById(R.id.btn20000);
         Button btn50000 = findViewById(R.id.btn50000);
 
+        //init action for view
         btn1000.setOnClickListener(this);
         btn2000.setOnClickListener(this);
         btn5000.setOnClickListener(this);
@@ -59,8 +62,8 @@ public class MoneySelectionDialog extends Dialog implements View.OnClickListener
         }
     }
 
-    private void setSelection(long value) {
-        mainActivity.updateSelection(value);
+    private void setSelection(long coin) {
+        mainActivity.updateSelection(coin);
         this.dismiss();
     }
 }

@@ -32,39 +32,17 @@
                 android:id="@+id/tvCoin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="10.000.000 Coins"
+                android:text="10.000.000 đ"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="invisible">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_dollar" />
-
-            <TextView
-                android:id="@+id/tvDollar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="10.000.000 Dollars"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
     </LinearLayout>
 
 
     <LinearLayout
-        android:id="@+id/llMoneySelection"
+        android:id="@+id/llCoinSelection"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_weight="3"
@@ -73,13 +51,14 @@
         android:weightSum="5">
 
         <ImageButton
-            android:id="@+id/ibtnMoneySelection"
+            android:id="@+id/ibtnCoinSelection"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="3"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_dollar" />
+            android:src="@drawable/ic_coin"
+            tools:ignore="NestedWeights" />
 
         <TextView
             android:id="@+id/tvSelection"
@@ -87,7 +66,7 @@
             android:layout_height="0dp"
             android:layout_weight="2"
             android:gravity="center"
-            android:text="Chọn tiền"
+            android:text="@string/put_coin"
             android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

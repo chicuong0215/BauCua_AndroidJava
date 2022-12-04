@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/btn"
-        android:text="Đặt lại"
+        android:text="@string/reset"
         android:textColor="@color/white" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -22,7 +22,7 @@
         android:layout_margin="9dp"
         android:layout_weight="1"
         android:background="@drawable/btn_circle"
-        android:text="Lắc"
+        android:text="@string/rotate"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/btn"
-        android:text="Chơi tiếp"
-        android:textColor="@color/white" />
+        android:text="@string/play_continue"
+        android:textColor="@color/white"
+        android:visibility="invisible" />
 </LinearLayout>
