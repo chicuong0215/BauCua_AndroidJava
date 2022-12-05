@@ -7,4 +7,5 @@
     <string name="tip_do_not_have_enough_coin">You don\'t have enough coin!</string>
     <string name="reset">Reset</string>
     <string name="put_coin">Put coin</string>
+    <string name="rotating">Rotating...</string>
 </resources>

@@ -4,8 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -21,8 +25,9 @@ import com.cuong.app.baucua.utils.ScreenUtils;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
     private long coin = 1000000;
     private long reverseCoin = 0;
     private long selectionCoin = 0;
@@ -33,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //view
     private ImageButton ibtnBau, ibtnCua, ibtnTom, ibtnCa, ibtnGa, ibtnNai, ibtnCoinSelection;
-    private Button btnBack, btnRotate;
+    private Button btnReset, btnRotate, btnContinue;
     private TextView tvCoin, tvNai, tvBau, tvGa, tvCa, tvCua, tvTom, tvSelection, tvEarn;
     private ImageView imgvItem1, imgvItem2, imgvItem3;
     private LinearLayout llCoinSelection;
@@ -66,8 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibtnNai = findViewById(R.id.ibtnNai);
         ibtnCoinSelection = findViewById(R.id.ibtnCoinSelection);
 
-        btnBack = findViewById(R.id.btnBack);
+        btnReset = findViewById(R.id.btnReset);
         btnRotate = findViewById(R.id.btnRotate);
+        btnContinue = findViewById(R.id.btnContinue);
 
         tvCoin = findViewById(R.id.tvCoin);
         tvNai = findViewById(R.id.tvNai);
@@ -92,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initSelectionArr();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     void initAction() {
+        //on click
         ibtnBau.setOnClickListener(this);
         ibtnCua.setOnClickListener(this);
         ibtnTom.setOnClickListener(this);
@@ -101,10 +109,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ibtnNai.setOnClickListener(this);
         ibtnCoinSelection.setOnClickListener(this);
 
-        btnBack.setOnClickListener(this);
+        btnReset.setOnClickListener(this);
         btnRotate.setOnClickListener(this);
+        btnContinue.setOnClickListener(this);
 
         llCoinSelection.setOnClickListener(this);
+
+        //on long click
+        ibtnBau.setOnLongClickListener(this);
+        ibtnCua.setOnLongClickListener(this);
+        ibtnTom.setOnLongClickListener(this);
+        ibtnCa.setOnLongClickListener(this);
+        ibtnGa.setOnLongClickListener(this);
+        ibtnNai.setOnLongClickListener(this);
     }
 
     void initData() {
@@ -122,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.coin += earnCoin;
         tvCoin.setText(numberFormat.format(coin));
         tvEarn.setText(numberFormat.format(earnCoin - reverseCoin));
-        this.reverseCoin = 0;
     }
 
     public void resetSelectionArr() {
@@ -139,15 +155,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvEarn.setText(numberFormat.format(0));
     }
 
-    public void initResourceArr() {
-        resourceArr.put("bau", R.drawable.ic_gourd);
-        resourceArr.put("nai", R.drawable.ic_deer);
-        resourceArr.put("ga", R.drawable.ic_chicken);
-        resourceArr.put("tom", R.drawable.ic_shrimp);
-        resourceArr.put("cua", R.drawable.ic_crab);
-        resourceArr.put("ca", R.drawable.ic_fish);
-    }
-
     public void initSelectionArr() {
         selectionArr.put("bau", 0L);
         selectionArr.put("nai", 0L);
@@ -158,21 +165,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void initResourceArr() {
+        resourceArr.put("bau", R.drawable.ic_gourd);
+        resourceArr.put("nai", R.drawable.ic_deer);
+        resourceArr.put("ga", R.drawable.ic_chicken);
+        resourceArr.put("tom", R.drawable.ic_shrimp);
+        resourceArr.put("cua", R.drawable.ic_crab);
+        resourceArr.put("ca", R.drawable.ic_fish);
+    }
+
     public void updateImageResult(String item1, String item2, String item3) {
-        showImage();
+        showImageResult();
 
         imgvItem1.setImageResource(resourceArr.get(item1));
         imgvItem2.setImageResource(resourceArr.get(item2));
         imgvItem3.setImageResource(resourceArr.get(item3));
     }
 
-    public void hiddenImage() {
+    public void hiddenImageResult() {
         imgvItem1.setVisibility(View.INVISIBLE);
         imgvItem2.setVisibility(View.INVISIBLE);
         imgvItem3.setVisibility(View.INVISIBLE);
     }
 
-    public void showImage() {
+    public void showImageResult() {
         imgvItem1.setVisibility(View.VISIBLE);
         imgvItem2.setVisibility(View.VISIBLE);
         imgvItem3.setVisibility(View.VISIBLE);
@@ -196,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
+        Log.d("event", "click");
         if (selectionCoin > 0) {
             if (isRotate) {
                 if (coin >= selectionCoin) {
@@ -234,51 +251,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     toast(getResources().getString(R.string.tip_do_not_have_enough_coin));
                 }
-
             } else {
-                toast(getResources().getString(R.string.tip_play_continue));
+//                toast("Nhấn đặt lại hoặc chơi tiếp!");
             }
         } else {
-            toast(getResources().getString(R.string.tip_put_coin));
-        }
-
-
-        if (view.getId() == R.id.btnRotate) {
-            if (isRotate) {
-                disableRotate();
-                new RotateDialog(this).show();
-            } else {
-                resetSelectionArr();
-                enableRotate();
-            }
-
+            new CoinSelectionDialog(this).show();
         }
         switch (view.getId()) {
-            case R.id.ibtnCoinSelection:
-            case R.id.llCoinSelection:
-                new CoinSelectionDialog(this).show();
+            case R.id.btnRotate:
+                AtomicBoolean isSelection = new AtomicBoolean(false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    selectionArr.forEach((k, v) -> {
+                        if (selectionArr.get(k) > 0L) {
+                            isSelection.set(true);
+                        }
+                    });
+                }
+                if (isSelection.get()) {
+                    isRotate = false;
+
+                    btnRotate.setVisibility(View.INVISIBLE);
+                    btnContinue.setVisibility(View.VISIBLE);
+
+                    new RotateDialog(this).show();
+                }
                 break;
-            case R.id.btnBack:
+            case R.id.btnReset:
+                isRotate = true;
+
                 coin += reverseCoin;
                 reverseCoin = 0;
 
                 resetSelectionArr();
-                enableRotate();
+                hiddenImageResult();
+
+                btnRotate.setVisibility(View.VISIBLE);
+                btnContinue.setVisibility(View.INVISIBLE);
+                break;
+            case R.id.btnContinue:
+                coin -= reverseCoin;
+                tvCoin.setText(numberFormat.format(coin));
+
+                tvEarn.setText(numberFormat.format(0));
+                hiddenImageResult();
+                new RotateDialog(this).show();
+                break;
+            case R.id.ibtnCoinSelection:
+            case R.id.llCoinSelection:
+                new CoinSelectionDialog(this).show();
                 break;
         }
-    }
-
-    private void enableRotate() {
-        isRotate = true;
-        btnRotate.setText(R.string.rotate);
-        btnRotate.setBackgroundResource(R.drawable.btn_circle);
-        hiddenImage();
-    }
-
-    private void disableRotate() {
-        isRotate = false;
-        btnRotate.setText(R.string.play_continue);
-        btnRotate.setBackgroundResource(R.drawable.btn_circle_2);
     }
 
     @Override
@@ -287,4 +309,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sharedPreferences.edit().putLong("coin", coin).apply();
     }
 
+    final CountDownTimer countDownTimer = new CountDownTimer(Long.MAX_VALUE, 30) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            selectionArr.put("nai", selectionArr.get("nai") + selectionCoin);
+            tvNai.setText(numberFormat.format(selectionArr.get("nai")));
+            updateCoinAfterSelect();
+        }
+
+        @Override
+        public void onFinish() {
+        }
+    };
+
+    @Override
+    public boolean onLongClick(View view) {
+        return false;
+    }
 }

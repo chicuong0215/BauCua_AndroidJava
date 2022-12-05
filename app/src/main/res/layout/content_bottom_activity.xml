@@ -4,36 +4,47 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="horizontal"
-    android:weightSum="3">
+    android:weightSum="2">
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnBack"
-        android:layout_width="0dp"
+        android:id="@+id/btnReset"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/btn"
+        android:background="@drawable/btn_circle_2"
+        android:gravity="center"
         android:text="@string/reset"
-        android:textColor="@color/white" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnRotate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="9dp"
-        android:layout_weight="1"
-        android:background="@drawable/btn_circle"
-        android:text="@string/rotate"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnContinue"
-        android:layout_width="0dp"
+    <FrameLayout
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/btn"
-        android:text="@string/play_continue"
-        android:textColor="@color/white"
-        android:visibility="invisible" />
+        android:layout_weight="1">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRotate"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_circle"
+            android:gravity="center"
+            android:text="@string/rotate"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnContinue"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_circle"
+            android:gravity="center"
+            android:text="@string/play_continue"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+    </FrameLayout>
 </LinearLayout>

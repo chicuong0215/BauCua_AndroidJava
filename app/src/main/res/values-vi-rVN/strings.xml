@@ -8,4 +8,5 @@
     <string name="tip_do_not_have_enough_coin">Bạn không đủ tiền!</string>
     <string name="reset">Đặt lại</string>
     <string name="put_coin">Đặt tiền</string>
+    <string name="rotating">Đang lắc...</string>
 </resources>
